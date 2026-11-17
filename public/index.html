@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central de Chamados da Programação</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f6; --card:#ffffff; --ink:#14213d; --muted:#5b6682; --line:#d5dbe8;
+  --blue:#1b4db1; --blue-ink:#ffffff; --yellow:#ffc400; --red:#c8321f; --green:#17803d;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f1524; --card:#182038; --ink:#eef1f8; --muted:#9aa5c3; --line:#2b3658;
+    --blue:#6b95f0; --blue-ink:#0f1524; --yellow:#ffd23d; --red:#ff7a66; --green:#4fd17f;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;line-height:1.45}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.logo{flex:none;width:52px;height:52px;border-radius:12px;background:var(--yellow);display:grid;place-items:center;font-size:28px;transform:rotate(-6deg)}
+h1{font-size:clamp(1.5rem,5vw,2.3rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:4px 0 20px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:.9rem}
+.stat b{font-size:1.25rem;margin-right:6px}
+.sla{background:var(--yellow);color:#14213d;border-color:transparent;font-weight:600}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:22px}
+h2{margin:0 0 12px;font-size:1.15rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:88px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
+.full{grid-column:1/-1}
+.btn{font:inherit;font-weight:800;border:0;border-radius:10px;padding:12px 20px;background:var(--blue);color:var(--blue-ink);cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.6;cursor:wait}
+.small{font-size:.8rem;padding:7px 12px;border-radius:8px;font-weight:600}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.hint{color:var(--muted);font-size:.85rem}
+.ticket{border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:10px;padding:14px;margin-bottom:12px;background:var(--bg)}
+.ticket.done{border-left-color:var(--green);opacity:.85}
+.ticket.blame{border-left-color:var(--red)}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.num{font-weight:800;color:var(--muted)}
+.who{font-weight:800}
+.desk{color:var(--muted);font-size:.9rem}
+.badge{font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:99px;background:var(--blue);color:var(--blue-ink)}
+.done .badge{background:var(--green)}
+.blame .badge{background:var(--red)}
+.ask{font-size:1.08rem;margin:4px 0 8px;font-weight:600;overflow-wrap:anywhere}
+.reply{background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;font-size:.92rem;margin:8px 0}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true">🤖</div>
+    <h1>Central de Chamados da Programação</h1>
+  </header>
+  <p class="sub">Precisa de código? Abra um chamado. Tempo médio de resposta: depende do café.</p>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="panel">
+    <h2>Abrir novo chamado</h2>
+    <div class="grid">
+      <div>
+        <label for="nome">Seu nome</label>
+        <input id="nome" maxlength="40" placeholder="Ex.: Jefer" autocomplete="off">
+      </div>
+      <div>
+        <label for="mesa">Mesa / função</label>
+        <select id="mesa">
+          <option>Mesa da mecânica</option>
+          <option>Mesa da eletrônica</option>
+          <option>Mesa do design</option>
+          <option>Mesa da comunicação</option>
+          <option>Mesa da pesquisa</option>
+          <option>Capitão(ã) da equipe</option>
+          <option>Professor(a)</option>
+          <option>Visitante perdido</option>
+        </select>
+      </div>
+      <div>
+        <label for="prio">Urgência</label>
+        <select id="prio">
+          <option>Quando der</option>
+          <option>Para hoje</option>
+          <option>Para ontem</option>
+          <option>O robô já está na pista</option>
+        </select>
+      </div>
+      <div class="full">
+        <label for="pedido">O que você quer?</label>
+        <textarea id="pedido" maxlength="280" placeholder="Ex.: Faz um código pro motor rodar a 2300RPM"></textarea>
+      </div>
+      <div class="full row">
+        <button class="btn" id="enviar">Enviar pra programação</button>
+        <span class="hint" id="msg" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row">
+      <h2 style="margin:0">Fila da programação</h2>
+      <span class="spacer"></span>
+      <button class="btn small ghost" id="modo">Modo programador</button>
+      <button class="btn small ghost" id="limpar" hidden>Limpar resolvidos</button>
+    </div>
+    <p class="hint" id="dica">A fila atualiza sozinha a cada poucos segundos.</p>
+    <div id="lista"></div>
+  </section>
+
+  <footer>Feito para brincar. A programação não se responsabiliza por promessas feitas às 23h59.</footer>
+</div>
+
+<script>
+(function(){
+  var STATUS=["Na fila","Em análise","Compilando…","Funciona na minha máquina","Resolvido","Culpa da mecânica"];
+  var $=function(id){return document.getElementById(id)};
+  var tickets=[], last="", pin="", needPin=false, prog=false;
+  try{pin=sessionStorage.getItem("pin")||""}catch(e){}
+
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+  function pad(n){return "#"+String(n).padStart(4,"0")}
+  function api(method,url,data){
+    var h={"Content-Type":"application/json","x-pin":pin};
+    return fetch(url,{method:method,headers:h,body:data?JSON.stringify(data):undefined}).then(function(r){
+      return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw new Error(j.erro||"Erro");return j})
+    });
+  }
+  function refresh(){
+    return api("GET","/api/tickets").then(function(t){
+      var s=JSON.stringify(t);
+      if(s!==last){last=s;tickets=t;render()}
+    }).catch(function(){});
+  }
+  function setProg(on){
+    prog=on;
+    $("limpar").hidden=!on;
+    $("modo").textContent=on?"Sair do modo programador":"Modo programador";
+    $("dica").textContent=on?"Modo programador ativo: você pode atender os chamados.":"A fila atualiza sozinha a cada poucos segundos.";
+    render();
+  }
+  function act(p){
+    p.then(refresh).catch(function(e){alert(e.message)});
+  }
+
+  function render(){
+    var open=tickets.filter(function(t){return t.s<4}).length;
+    var st=$("stats");st.textContent="";
+    var a=el("div","stat");a.appendChild(el("b","",open));a.appendChild(document.createTextNode("em aberto"));
+    var b=el("div","stat");b.appendChild(el("b","",tickets.length-open));b.appendChild(document.createTextNode("encerrados"));
+    st.append(a,b,el("div","stat sla","Prazo garantido: 5 minutos (mentira)"));
+
+    var box=$("lista");box.textContent="";
+    if(!tickets.length){box.appendChild(el("div","empty","Nenhum chamado. A programação está de folga (por enquanto)."));return}
+    tickets.slice().reverse().forEach(function(t){
+      var card=el("article","ticket"+(t.s===4?" done":"")+(t.s===5?" blame":""));
+      var top=el("div","top");
+      top.append(el("span","num",pad(t.id)),el("span","who",t.nome),el("span","desk",t.mesa+" · "+t.prio),el("span","spacer"),el("span","badge",STATUS[t.s]));
+      card.appendChild(top);
+      card.appendChild(el("p","ask",t.pedido));
+      if(t.resp)card.appendChild(el("div","reply","Programação: "+t.resp));
+      if(prog){
+        var row=el("div","row");
+        if(t.s<4){
+          var adv=el("button","btn small","Avançar status");
+          adv.onclick=function(){act(api("PATCH","/api/tickets/"+t.id,{s:t.s+1}))};
+          var bl=el("button","btn small ghost","Culpa da mecânica");
+          bl.onclick=function(){act(api("PATCH","/api/tickets/"+t.id,{s:5}))};
+          row.append(adv,bl);
+        }
+        var del=el("button","btn small ghost","Apagar");
+        del.onclick=function(){act(api("DELETE","/api/tickets/"+t.id))};
+        row.appendChild(del);
+        card.appendChild(row);
+      }
+      box.appendChild(card);
+    });
+  }
+
+  $("enviar").onclick=function(){
+    var nome=$("nome").value.trim(),pedido=$("pedido").value.trim(),m=$("msg"),btn=$("enviar");
+    if(!nome||!pedido){m.textContent="Preencha nome e pedido. A programação não adivinha (ainda).";return}
+    btn.disabled=true;
+    api("POST","/api/tickets",{nome:nome,pedido:pedido,mesa:$("mesa").value,prio:$("prio").value}).then(function(t){
+      $("pedido").value="";m.textContent="Chamado "+pad(t.id)+" enviado. Respire fundo e espere.";
+      return refresh();
+    }).catch(function(e){m.textContent=e.message}).then(function(){btn.disabled=false});
+  };
+  $("modo").onclick=function(){
+    if(prog){setProg(false);return}
+    if(!needPin){setProg(true);return}
+    var p=prompt("PIN da programação:");
+    if(p===null)return;
+    fetch("/api/auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin:p})}).then(function(r){
+      if(!r.ok){alert("PIN errado. Boa tentativa, aluno.");return}
+      pin=p;try{sessionStorage.setItem("pin",p)}catch(e){}
+      setProg(true);
+    });
+  };
+  $("limpar").onclick=function(){act(api("POST","/api/clear"))};
+
+  fetch("/api/config").then(function(r){return r.json()}).then(function(c){
+    needPin=c.pin;
+    if(!needPin||pin){setProg(false)}
+  }).catch(function(){});
+  refresh();
+  setInterval(refresh,4000);
+})();
+</script>
+</body>
+</html>

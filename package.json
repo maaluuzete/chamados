@@ -1,0 +1,12 @@
+{
+  "name": "central-de-chamados-robotica",
+  "version": "1.0.0",
+  "description": "Central de chamados (de brincadeira) para a equipe de robótica",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
